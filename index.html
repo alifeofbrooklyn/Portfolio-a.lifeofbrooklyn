@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - a.lifeofbrooklyn</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configure Tailwind Dark Mode -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    width: {
+                        'search-expanded': '240px',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Smooth transition for search width */
+        #search-container {
+            transition: width 0.3s ease-in-out, background-color 0.3s;
+        }
+        /* Hide scrollbar for modal */
+        .no-scroll {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-900 dark:bg-black dark:text-white transition-colors duration-300">
+
+    <!-- HEADER / NAVIGATION -->
+    <header id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-5 bg-white dark:bg-black">
+        <div class="container mx-auto px-6 flex items-center justify-between">
+            
+            <!-- Mobile Menu Button -->
+            <button class="lg:hidden p-2" onclick="toggleMenu()">
+                <i data-lucide="menu" id="menu-icon" class="w-6 h-6"></i>
+            </button>
+
+            <!-- Left Nav (Desktop) -->
+            <nav class="hidden lg:flex items-center space-x-8 font-medium text-sm text-gray-600 dark:text-gray-400">
+                <a href="#work" class="hover:text-black dark:hover:text-white transition-colors" data-i18n="nav.work">WORK</a>
+                <a href="javascript:void(0)" onclick="openAboutModal()" class="hover:text-black dark:hover:text-white transition-colors" data-i18n="nav.about">ABOUT ME</a>
+                <a href="#services" class="hover:text-black dark:hover:text-white transition-colors" data-i18n="nav.services">SERVICES</a>
+            </nav>
+
+            <!-- Logo (Center) -->
+            <div class="absolute left-1/2 transform -translate-x-1/2 hidden md:block">
+                <!-- Added dark:invert class to flip color in dark mode -->
+                <img src="https://img2.pic.in.th/pic/SAD-GUY-LOGO.png" alt="SAD GUY LOGO" class="h-8 md:h-10 dark:invert transition-all duration-300">
+            </div>
+            <!-- Mobile Logo -->
+             <div class="md:hidden">
+                <!-- Added dark:invert class -->
+                <img src="https://img2.pic.in.th/pic/SAD-GUY-LOGO.png" alt="SAD GUY LOGO" class="h-7 md:h-8 dark:invert transition-all duration-300">
+            </div>
+
+            <!-- Right Icons -->
+            <div class="flex items-center space-x-3 lg:space-x-4">
+                
+                <!-- Expandable Search Bar -->
+                <div id="search-container" class="hidden md:flex items-center rounded-full overflow-hidden w-8 h-8 cursor-pointer bg-transparent border border-transparent hover:bg-gray-100 dark:hover:bg-neutral-800 transition-all duration-300 relative">
+                    <button onclick="toggleSearch()" class="absolute left-0 top-0 p-1 w-8 h-8 flex items-center justify-center z-10">
+                        <i data-lucide="search" class="text-gray-900 dark:text-white w-5 h-5"></i>
+                    </button>
+                    <input 
+                        type="text" 
+                        id="search-input"
+                        placeholder="Search projects..." 
+                        onkeyup="filterProjects()"
+                        class="pl-10 pr-4 w-full h-full bg-transparent border-none outline-none text-sm text-gray-900 dark:text-white placeholder-gray-500 opacity-0 transition-opacity duration-200"
+                    />
+                    <button id="close-search-btn" onclick="toggleSearch()" class="absolute right-2 top-1/2 transform -translate-y-1/2 hidden text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                
+                <!-- User Icon (Opens Login/Register Modal) -->
+                <button onclick="openRegisterModal()" class="p-1 hidden sm:block hover:opacity-70 transition-opacity">
+                    <i data-lucide="user" class="w-6 h-6"></i>
+                </button>
+                
+                <!-- Language Toggle Button -->
+                <button 
+                    onclick="toggleLanguage()"
+                    class="p-1 flex items-center justify-center font-bold text-xs w-8 h-8 rounded-full border border-current hover:scale-105 transition-transform"
+                    id="lang-btn"
+                    title="Switch Language"
+                >
+                    TH
+                </button>
+
+                <!-- Dark Mode Toggle Button -->
+                <button 
+                    onclick="toggleTheme()"
+                    class="p-1 hover:scale-110 active:scale-95 transition-transform"
+                    id="theme-btn"
+                    title="Toggle Theme"
+                >
+                    <i data-lucide="moon" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden absolute top-full left-0 right-0 border-t p-6 shadow-lg flex flex-col space-y-4 bg-white dark:bg-neutral-900 border-gray-200 dark:border-neutral-800">
+            <a href="#work" class="font-bold text-lg" onclick="toggleMenu()" data-i18n="nav.work">WORK</a>
+            <a href="javascript:void(0)" class="font-bold text-lg" onclick="toggleMenu(); openAboutModal()" data-i18n="nav.about">ABOUT ME</a>
+            <a href="#services" class="font-bold text-lg" onclick="toggleMenu()" data-i18n="nav.services">SERVICES</a>
+            <div class="pt-4 border-t border-gray-200 dark:border-neutral-800">
+               <input 
+                type="text" 
+                id="mobile-search-input"
+                placeholder="Search..." 
+                onkeyup="filterProjectsMobile()"
+                class="w-full p-3 rounded text-sm outline-none bg-gray-100 dark:bg-neutral-800 text-gray-900 dark:text-white"
+              />
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT SPACE -->
+    <div class="h-24"></div>
+
+    <main class="flex-grow container mx-auto px-6 py-12 max-w-7xl">
+        
+        <!-- TEXT SECTION 1 (Hero) -->
+        <section class="mb-16">
+            <h2 class="text-3xl md:text-5xl font-black uppercase mb-6 tracking-tight text-black dark:text-white" data-i18n="hero.title">
+                UI/UX DESIGN & WEB DEVELOPMENT
+            </h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed max-w-4xl" data-i18n="hero.p1">
+                Digital experiences designed to help your brand become its personal best. Because when it comes to performing at your max in the digital world, there should be no obstacles – least of all your website.
+            </p>
+            <p class="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed max-w-4xl" data-i18n="hero.p2">
+                Functional and beautiful, I create user interfaces you'll love to use. Since 2025, I've designed and developed the web applications I want to see in the world, because innovation and user experience are what I know best.
+            </p>
+        </section>
+
+        <!-- TEXT SECTION 2 (Projects Intro) -->
+        <section class="mb-20">
+            <h2 class="text-2xl md:text-3xl font-black uppercase mb-4 tracking-tight text-black dark:text-white" data-i18n="projects.title">
+                PROJECTS BUILT IN THE CODE EDITOR
+            </h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed max-w-5xl text-sm md:text-base" data-i18n="projects.p1">
+                My legacy was built in the code editor. This portfolio was founded with a love for coding and that passion continues into all my projects today. You'll find the latest innovation in web technology and design to help you perform at your best and recover in style.
+            </p>
+            
+            <div class="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed max-w-5xl text-sm md:text-base">
+                <span data-i18n="projects.p2_intro">My</span> 
+                <span class="font-bold text-black dark:text-white" data-i18n="projects.p2_fe">Frontend Work</span> 
+                <span data-i18n="projects.p2_text1">features pixel-perfect</span> 
+                <span class="font-bold text-black dark:text-white" data-i18n="projects.p2_react">React components</span> 
+                <span data-i18n="projects.p2_text2">and</span> 
+                <span class="font-bold text-black dark:text-white" data-i18n="projects.p2_tail">Tailwind CSS layouts</span> 
+                <span data-i18n="projects.p2_text3">. Whilst my</span> 
+                <span class="font-bold text-black dark:text-white" data-i18n="projects.p2_be">Backend Systems</span> 
+                <span data-i18n="projects.p2_text4">are designed for a range of scales and feature sophisticated API integrations.</span>
+            </div>
+        </section>
+
+        <!-- FEATURED CARDS (Work Section) -->
+        <section id="work" class="border-t pt-16 border-gray-200 dark:border-neutral-800 scroll-mt-20">
+            <div class="flex justify-between items-end mb-8">
+                <h2 class="text-2xl md:text-3xl font-black uppercase tracking-tight text-black dark:text-white" data-i18n="cards.sectionTitle">MORE ABOUT MY WORK</h2>
+                <p id="no-results-msg" class="hidden text-sm text-gray-500">No projects found.</p>
+            </div>
+            
+            <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Card 1: FOR JOJI (Popup) -->
+                <div onclick="openProjectPreview('https://alifeofbrooklyn.github.io/Joji-a.lifeofbrooklyn/', 'FOR JOJI')" class="group project-card cursor-pointer block" data-keywords="joji sound music web">
+                    <div class="relative aspect-[4/3] mb-4 overflow-hidden border bg-black border-transparent dark:bg-neutral-900 dark:border-neutral-800">
+                        <!-- Project Background Image -->
+                        <img src="https://img5.pic.in.th/file/secure-sv1/jojizzz.png" alt="Joji Project" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <!-- Dark Overlay for Text Readability -->
+                        <div class="absolute inset-0 bg-black/60 transition-opacity group-hover:bg-black/50"></div>
+                        
+                        <div class="absolute inset-0 flex items-center justify-center z-10">
+                           <div class="text-center px-4">
+                             <h4 class="text-white font-black text-3xl uppercase tracking-tighter leading-none mb-2 search-title" data-i18n-html="cards.c1_title_sub">FOR JOJI<br>DISCOVER YOUR SOUND</h4>
+                             <p class="text-gray-300 text-xs mt-2 uppercase tracking-widest" data-i18n="cards.c1_stack">Web Experience</p>
+                           </div>
+                        </div>
+                    </div>
+                    <div class="p-4 border bg-gray-100 border-gray-100 dark:bg-neutral-900 dark:border-neutral-800 group-hover:border-black dark:group-hover:border-white transition-colors">
+                       <h4 class="font-bold text-sm uppercase mb-1 text-black dark:text-white" data-i18n="cards.c1_tag">CASE STUDY</h4>
+                       <p class="text-xs text-gray-500 search-desc" data-i18n="cards.c1_desc">An interactive sound discovery platform.</p>
+                    </div>
+                </div>
+
+                <!-- Card 2: Space-Ideas (Popup) -->
+                <div onclick="openProjectPreview('https://alifeofbrooklyn.github.io/Space-Ideas-a.lifeofbrooklyn/', 'SPACE IDEAS')" class="group project-card cursor-pointer block" data-keywords="space ideas room decoration interior">
+                    <div class="relative aspect-[4/3] mb-4 overflow-hidden border bg-black border-transparent dark:bg-neutral-800 dark:border-neutral-800">
+                        <!-- Project Background Image -->
+                        <img src="https://img2.pic.in.th/pic/spacezzz.png" alt="Space Ideas" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <!-- Dark Overlay -->
+                        <div class="absolute inset-0 bg-black/60 transition-opacity group-hover:bg-black/50"></div>
+
+                        <div class="absolute inset-0 flex items-center justify-center z-10">
+                          <div class="text-center px-4">
+                             <h4 class="text-white font-black text-3xl uppercase tracking-tighter leading-none mb-2 search-title" data-i18n-html="cards.c2_title_sub">SPACE-IDEAS<br>INTERIOR GUIDE</h4>
+                             <p class="text-gray-300 text-xs mt-2 uppercase tracking-widest" data-i18n="cards.c2_stack">React / Content</p>
+                           </div>
+                        </div>
+                    </div>
+                    <div class="p-4 border bg-black text-white border-black dark:bg-white dark:text-black dark:border-white group-hover:bg-gray-900 dark:group-hover:bg-gray-100 transition-colors">
+                       <h4 class="font-bold text-sm uppercase mb-1" data-i18n="cards.c2_tag">BLOG / GUIDE</h4>
+                       <p class="text-xs text-gray-300 dark:text-gray-800 search-desc" data-i18n="cards.c2_desc">Room decoration ideas for various styles.</p>
+                    </div>
+                </div>
+
+                 <!-- Card 3: NEXUS Store (Popup) -->
+                <div onclick="openProjectPreview('https://alifeofbrooklyn.github.io/E-commerce-a.lifeofbrooklyn/', 'NEXUS STORE')" class="group project-card cursor-pointer block" data-keywords="nexus store ecommerce shop">
+                    <div class="relative aspect-[4/3] mb-4 overflow-hidden border bg-black border-transparent dark:bg-neutral-900 dark:border-neutral-800">
+                        <!-- Project Background Image -->
+                        <img src="https://img5.pic.in.th/file/secure-sv1/e-comzzz.png" alt="Nexus Store" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <!-- Dark Overlay -->
+                        <div class="absolute inset-0 bg-black/60 transition-opacity group-hover:bg-black/50"></div>
+
+                        <div class="absolute inset-0 flex items-center justify-center z-10">
+                           <div class="text-center px-4">
+                             <h4 class="text-white font-black text-3xl uppercase tracking-tighter leading-none mb-2 search-title" data-i18n-html="cards.c3_title_sub">NEXUS STORE<br>2025 E-COMMERCE</h4>
+                             <p class="text-gray-300 text-xs mt-2 uppercase tracking-widest" data-i18n="cards.c3_stack">Full Stack</p>
+                           </div>
+                        </div>
+                    </div>
+                    <div class="p-4 border bg-gray-100 border-gray-100 dark:bg-neutral-900 dark:border-neutral-800 group-hover:border-black dark:group-hover:border-white transition-colors">
+                       <h4 class="font-bold text-sm uppercase mb-1 text-black dark:text-white" data-i18n="cards.c3_tag">WEB APPLICATION</h4>
+                       <p class="text-xs text-gray-500 search-desc" data-i18n="cards.c3_desc">Next-gen online shopping platform.</p>
+                    </div>
+                </div>
+
+                <!-- Card 4: Xinsoo (Popup) -->
+                <div onclick="openProjectPreview('https://alifeofbrooklyn.github.io/Xinsooo-a.lifeofbrooklyn/', 'XINSOO')" class="group project-card cursor-pointer block" data-keywords="xinsoo shin su-hyun artist portfolio">
+                    <div class="relative aspect-[4/3] mb-4 overflow-hidden border bg-black border-transparent dark:bg-neutral-800 dark:border-neutral-800">
+                        <!-- Project Background Image -->
+                        <img src="https://img5.pic.in.th/file/secure-sv1/xinsoozzz.png" alt="Xinsoo Portfolio" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <!-- Dark Overlay -->
+                        <div class="absolute inset-0 bg-black/60 transition-opacity group-hover:bg-black/50"></div>
+
+                        <div class="absolute inset-0 flex items-center justify-center z-10">
+                          <div class="text-center px-4">
+                             <h4 class="text-white font-black text-3xl uppercase tracking-tighter leading-none mb-2 search-title" data-i18n-html="cards.c4_title_sub">XINSOO<br>SHIN SU-HYUN</h4>
+                             <p class="text-gray-300 text-xs mt-2 uppercase tracking-widest" data-i18n="cards.c4_stack">Portfolio</p>
+                           </div>
+                        </div>
+                    </div>
+                    <div class="p-4 border bg-black text-white border-black dark:bg-white dark:text-black dark:border-white group-hover:bg-gray-900 dark:group-hover:bg-gray-100 transition-colors">
+                       <h4 class="font-bold text-sm uppercase mb-1" data-i18n="cards.c4_tag">ARTIST SHOWCASE</h4>
+                       <p class="text-xs text-gray-300 dark:text-gray-800 search-desc" data-i18n="cards.c4_desc">Official portfolio for artist Shin Su-hyun.</p>
+                    </div>
+                </div>
+
+                <!-- Card 5: HBD Card (Popup) -->
+                <div onclick="openProjectPreview('https://alifeofbrooklyn.github.io/happroject-a.lifeofbrooklyn/', 'HBD CARD')" class="group project-card cursor-pointer block" data-keywords="hbd birthday card greetings">
+                    <div class="relative aspect-[4/3] mb-4 overflow-hidden border bg-black border-transparent dark:bg-neutral-900 dark:border-neutral-800">
+                        <!-- Project Background Image -->
+                        <img src="https://i.postimg.cc/gJvCJtqg/hbdzzz.png" alt="HBD Card" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <!-- Dark Overlay -->
+                        <div class="absolute inset-0 bg-black/60 transition-opacity group-hover:bg-black/50"></div>
+
+                        <div class="absolute inset-0 flex items-center justify-center z-10">
+                           <div class="text-center px-4">
+                             <h4 class="text-white font-black text-3xl uppercase tracking-tighter leading-none mb-2 search-title" data-i18n-html="cards.c5_title_sub">HBD CARD<br>DIGITAL GREETINGS</h4>
+                             <p class="text-gray-300 text-xs mt-2 uppercase tracking-widest" data-i18n="cards.c5_stack">Interactive UI</p>
+                           </div>
+                        </div>
+                    </div>
+                    <div class="p-4 border bg-gray-100 border-gray-100 dark:bg-neutral-900 dark:border-neutral-800 group-hover:border-black dark:group-hover:border-white transition-colors">
+                       <h4 class="font-bold text-sm uppercase mb-1 text-black dark:text-white" data-i18n="cards.c5_tag">WEB APP</h4>
+                       <p class="text-xs text-gray-500 search-desc" data-i18n="cards.c5_desc">Platform for sending digital birthday cards.</p>
+                    </div>
+                </div>
+
+                <!-- Card 6: KORE Brand-Website (Popup) -->
+                <div onclick="openProjectPreview('https://alifeofbrooklyn.github.io/Brand-Website-a.lifeofbrooklyn/', 'KORE')" class="group project-card cursor-pointer block" data-keywords="KORE-Brand-Website">
+                    <div class="relative aspect-[4/3] mb-4 overflow-hidden border bg-black border-transparent dark:bg-neutral-800 dark:border-neutral-800">
+                        <!-- Project Background Image -->
+                        <img src="https://img2.pic.in.th/pic/korebzzz.png" alt="KORE
+                        " class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <!-- Dark Overlay -->
+                        <div class="absolute inset-0 bg-black/60 transition-opacity group-hover:bg-black/50"></div>
+
+                        <div class="absolute inset-0 flex items-center justify-center z-10">
+                          <div class="text-center px-4">
+                             <h4 class="text-white font-black text-3xl uppercase tracking-tighter leading-none mb-2 search-title" data-i18n-html="cards.c6_title_sub">KORE<br>Brand-Website</h4>
+                             <p class="text-gray-300 text-xs mt-2 uppercase tracking-widest" data-i18n="cards.c6_stack">Brand-Website</p>
+                           </div>
+                        </div>
+                    </div>
+                    <div class="p-4 border bg-black text-white border-black dark:bg-white dark:text-black dark:border-white group-hover:bg-gray-900 dark:group-hover:bg-gray-100 transition-colors">
+                       <h4 class="font-bold text-sm uppercase mb-1" data-i18n="cards.c6_tag">WEB APPLICATION</h4>
+                       <p class="text-xs text-gray-300 dark:text-gray-800 search-desc" data-i18n="cards.c6_desc">Brand memorable and different from your competitors.</p>
+                    </div>
+                </div>
+
+                <!-- Card 7: GymDiscipline (Popup) -->
+                <div onclick="openProjectPreview('https://alifeofbrooklyn.github.io/GymDiscipline-a.lifeofbrooklyn/', 'GymDiscipline')" class="group project-card cursor-pointer block" data-keywords="GymDiscipline">
+                    <div class="relative aspect-[4/3] mb-4 overflow-hidden border bg-black border-transparent dark:bg-neutral-900 dark:border-neutral-800">
+                        <!-- Project Background Image -->
+                        <img src="https://img2.pic.in.th/pic/lifezzz.png" alt="Joji Project" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <!-- Dark Overlay for Text Readability -->
+                        <div class="absolute inset-0 bg-black/60 transition-opacity group-hover:bg-black/50"></div>
+                        
+                        <div class="absolute inset-0 flex items-center justify-center z-10">
+                           <div class="text-center px-4">
+                             <h4 class="text-white font-black text-3xl uppercase tracking-tighter leading-none mb-2 search-title" data-i18n-html="cards.c7_title_sub">Gym<br>Discipline</h4>
+                             <p class="text-gray-300 text-xs mt-2 uppercase tracking-widest" data-i18n="cards.c7_stack">Portfolio</p>
+                           </div>
+                        </div>
+                    </div>
+                    <div class="p-4 border bg-gray-100 border-gray-100 dark:bg-neutral-900 dark:border-neutral-800 group-hover:border-black dark:group-hover:border-white transition-colors">
+                       <h4 class="font-bold text-sm uppercase mb-1 text-black dark:text-white" data-i18n="cards.c7_tag">EVERYDAY LIFE</h4>
+                       <p class="text-xs text-gray-500 search-desc" data-i18n="cards.c7_desc">Official Portfolio.</p>
+                    </div>
+                </div>
+
+                <!-- Card 0: GET IN TOUCH (External Link) -->
+                <a href="https://github.com/alifeofbrooklyn" target="_blank" class="group project-card cursor-pointer block" data-keywords="contact email touch">
+                    <div class="relative aspect-[4/3] mb-4 overflow-hidden border bg-black border-transparent dark:bg-neutral-900 dark:border-neutral-800">
+                        <!-- Project Background Image -->
+                        <img src="https://images.unsplash.com/photo-1516387938699-a93567ec168e?q=80&w=2071&auto=format&fit=crop" alt="Contact" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <!-- Dark Overlay -->
+                        <div class="absolute inset-0 bg-black/60 transition-opacity group-hover:bg-black/50"></div>
+
+                        <div class="absolute inset-0 flex items-center justify-center z-10">
+                            <div class="text-center px-4">
+                             <i data-lucide="mail" class="text-white mx-auto mb-2 w-12 h-12"></i>
+                             <h4 class="text-white font-black text-2xl uppercase tracking-tighter search-title" data-i18n="cards.c0_title">GET IN TOUCH</h4>
+                           </div>
+                        </div>
+                    </div>
+                    <div class="p-4 border bg-black text-white border-black dark:bg-white dark:text-black dark:border-white group-hover:bg-gray-900 dark:group-hover:bg-gray-100 transition-colors">
+                       <h4 class="font-bold text-sm uppercase mb-1" data-i18n="cards.c0_tag">CONTACT ME</h4>
+                       <p class="text-xs text-gray-300 dark:text-gray-800 search-desc" data-i18n="cards.c0_desc">Let's build something great together.</p>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- SERVICES SECTION -->
+        <section id="services" class="border-t pt-16 border-gray-200 dark:border-neutral-800 scroll-mt-20 mb-16">
+            <h2 class="text-2xl md:text-3xl font-black uppercase mb-8 tracking-tight text-black dark:text-white" data-i18n="services.title">
+                SERVICES
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Service 1 -->
+                <div class="p-6 bg-gray-50 dark:bg-neutral-900 border border-transparent hover:border-black dark:hover:border-white transition-colors duration-300">
+                    <i data-lucide="monitor" class="w-10 h-10 mb-4 text-black dark:text-white"></i>
+                    <h4 class="font-bold text-lg mb-2 text-black dark:text-white tracking-wide" data-i18n="services.s1_title">WEB DEVELOPMENT</h4>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed" data-i18n="services.s1_desc">High-performance websites built with modern technologies like React, Vue, and Tailwind CSS.</p>
+                </div>
+                <!-- Service 2 -->
+                <div class="p-6 bg-gray-50 dark:bg-neutral-900 border border-transparent hover:border-black dark:hover:border-white transition-colors duration-300">
+                    <i data-lucide="pen-tool" class="w-10 h-10 mb-4 text-black dark:text-white"></i>
+                    <h4 class="font-bold text-lg mb-2 text-black dark:text-white tracking-wide" data-i18n="services.s2_title">UI/UX DESIGN</h4>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed" data-i18n="services.s2_desc">Intuitive and beautiful user interfaces designed for optimal user experience and conversion.</p>
+                </div>
+                <!-- Service 3 -->
+                <div class="p-6 bg-gray-50 dark:bg-neutral-900 border border-transparent hover:border-black dark:hover:border-white transition-colors duration-300">
+                    <i data-lucide="smartphone" class="w-10 h-10 mb-4 text-black dark:text-white"></i>
+                    <h4 class="font-bold text-lg mb-2 text-black dark:text-white tracking-wide" data-i18n="services.s3_title">MOBILE APPS</h4>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed" data-i18n="services.s3_desc">Cross-platform mobile applications for iOS and Android that connect you with your audience anywhere.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white dark:bg-black border-t border-gray-200 dark:border-neutral-800 pt-16 pb-8 text-gray-600 dark:text-gray-400 transition-colors duration-300">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+                <!-- Column 1 -->
+                <div>
+                    <h5 class="font-bold text-sm mb-4 text-black dark:text-white" data-i18n="footer.help">HELP</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="javascript:void(0)" onclick="openFAQModal()" class="hover:underline transition-colors hover:text-black dark:hover:text-white" data-i18n="footer.links.faq">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 2 -->
+                <div>
+                    <h5 class="font-bold text-sm mb-4 text-black dark:text-white" data-i18n="footer.myAccount">MY ACCOUNT</h5>
+                    <ul class="space-y-2 text-sm">
+                        <!-- Trigger Register Modal -->
+                        <li><a href="javascript:void(0)" onclick="openRegisterModal('login')" class="hover:underline transition-colors hover:text-black dark:hover:text-white">Login</a></li>
+                        <li><a href="javascript:void(0)" onclick="openRegisterModal('register')" class="hover:underline transition-colors hover:text-black dark:hover:text-white">Register</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3 -->
+                <div>
+                    <h5 class="font-bold text-sm mb-4 text-black dark:text-white" data-i18n="footer.pages">PAGES</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:underline transition-colors hover:text-black dark:hover:text-white" data-i18n="footer.links.projects">Projects</a></li>
+                        <li><a href="#" class="hover:underline transition-colors hover:text-black dark:hover:text-white" data-i18n="footer.links.resume">Resume</a></li>
+                        <li><a href="#" class="hover:underline transition-colors hover:text-black dark:hover:text-white" data-i18n="footer.links.blog">Blog</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 4 -->
+                <div>
+                    <h5 class="font-bold text-sm mb-4 text-black dark:text-white" data-i18n="footer.socials">SOCIALS</h5>
+                    <div class="flex flex-wrap gap-4 text-black dark:text-white">
+                        
+                        <!-- GitHub -->
+                        <a href="https://github.com/alifeofbrooklyn" target="_blank" title="GitHub" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">
+                            <i data-lucide="github" class="w-5 h-5"></i>
+                        </a>
+
+                        <!-- LinkedIn -->
+                        <a href="http://www.linkedin.com/in/alifeofbrooklyn" target="_blank" title="LinkedIn" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">
+                            <i data-lucide="linkedin" class="w-5 h-5"></i>
+                        </a>
+
+                        <!-- Instagram -->
+                        <a href="https://www.instagram.com/a.lifeofbrooklyn" target="_blank" title="Instagram" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">
+                            <i data-lucide="instagram" class="w-5 h-5"></i>
+                        </a>
+
+                        <!-- X / Twitter -->
+                        <a href="https://x.com/MERLiN50042176" target="_blank" title="X (Formerly Twitter)" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/>
+                            </svg>
+                        </a>
+
+                        <!-- Discord -->
+                        <a href="https://discord.com/invite/43pEvXVWGv" target="_blank" title="Discord" class="transition-colors hover:text-gray-600 dark:hover:text-gray-400">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.419-2.1568 2.419zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.419-2.1568 2.419z"/>
+                            </svg>
+                        </a>
+
+                    </div>
+                    <div class="mt-8">
+                        <p class="text-xs text-gray-500 max-w-xs" data-i18n="footer.socialDesc">
+                            The Portfolio community is devoted to unlocking potential through conditioning and the things we do today to prepare for tomorrow.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-gray-200 dark:border-neutral-800">
+                <div class="flex items-center space-x-4 mb-4 md:mb-0">
+                    <span class="font-black text-xl tracking-tighter text-black dark:text-white">PORTFOLIO.</span>
+                    <span class="text-xs text-gray-500">© 2025 | Life Of Brooklyn | <span data-i18n="footer.rights">All Rights Reserved</span></span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ABOUT ME MODAL -->
+    <div id="about-modal" class="hidden fixed inset-0 z-[70] bg-white dark:bg-black overflow-y-auto animate-fade-in">
+        <!-- Close Button -->
+        <button onclick="closeAboutModal()" class="absolute top-6 right-6 p-2 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-full transition-colors z-10">
+            <i data-lucide="x" class="w-6 h-6 text-black dark:text-white"></i>
+        </button>
+
+        <div class="min-h-screen flex flex-col justify-center p-6 sm:p-12 md:p-24 animate-slide-up">
+            <div class="max-w-6xl mx-auto w-full">
+                <!-- Title -->
+                <h2 class="text-3xl md:text-5xl font-black uppercase mb-2 tracking-tight text-black dark:text-white" data-i18n="about.title">ABOUT ME</h2>
+                <p class="text-lg text-gray-500 uppercase tracking-widest mb-12 font-bold" data-i18n="about.subtitle1">DRIVEN BY PASSION</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
+                    
+                    <!-- Image Column (New) - Takes up 5 columns on desktop -->
+                    <div class="md:col-span-5 relative">
+                        <div class="aspect-[3/4] w-full overflow-hidden bg-gray-100 dark:bg-neutral-900">
+                            <!-- Updated Image Source to the one provided -->
+                            <img src="https://img5.pic.in.th/file/secure-sv1/MEf7896bc03a8cb93e.png" 
+                                 alt="Profile" 
+                                 class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 ease-in-out">
+                        </div>
+                        <!-- Decorative Element -->
+                        <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-black dark:bg-white z-[-1]"></div>
+                    </div>
+
+                    <!-- Content Column - Takes up 7 columns on desktop -->
+                    <div class="md:col-span-7 space-y-10">
+                        <!-- Text Content -->
+                        <div class="space-y-6">
+                            <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-lg font-light" data-i18n="about.text1">
+                                We are a collective of digital natives, obsessed with performance and sleek design. Our mission is to bridge the gap between imagination and reality through clean code and stunning visuals. We don't just build websites; we build digital legacies.
+                            </p>
+                            <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-lg font-light" data-i18n="about.text2">
+                                To be the catalyst for your digital evolution. We believe in conditioning your brand for the digital age, ensuring that every pixel serves a purpose and every interaction feels seamless. Progress is not just a goal; it's our standard.
+                            </p>
+                        </div>
+
+                        <!-- Skills / Stats Section -->
+                        <div class="bg-gray-50 dark:bg-neutral-900 p-8 border border-gray-100 dark:border-neutral-800">
+                            <h3 class="font-bold text-xl mb-6 text-black dark:text-white uppercase tracking-wider">SKILLS & EXPERTISE</h3>
+                            
+                            <div class="space-y-5">
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="font-bold text-xs uppercase tracking-wide text-gray-700 dark:text-gray-300">Frontend Development</span>
+                                        <span class="text-xs font-bold text-gray-500">95%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-neutral-800 h-1.5">
+                                        <div class="bg-black dark:bg-white h-1.5 w-[95%]"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="font-bold text-xs uppercase tracking-wide text-gray-700 dark:text-gray-300">UI/UX Design</span>
+                                        <span class="text-xs font-bold text-gray-500">85%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-neutral-800 h-1.5">
+                                        <div class="bg-black dark:bg-white h-1.5 w-[85%]"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="font-bold text-xs uppercase tracking-wide text-gray-700 dark:text-gray-300">Backend Systems</span>
+                                        <span class="text-xs font-bold text-gray-500">70%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-neutral-800 h-1.5">
+                                        <div class="bg-black dark:bg-white h-1.5 w-[70%]"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 pt-8 border-t border-gray-200 dark:border-neutral-800">
+                                <h4 class="font-bold text-xs mb-4 text-gray-500 uppercase tracking-widest">Tools I Use</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-3 py-1 bg-white dark:bg-black border border-gray-200 dark:border-neutral-700 text-xs font-bold uppercase text-black dark:text-white">React</span>
+                                    <span class="px-3 py-1 bg-white dark:bg-black border border-gray-200 dark:border-neutral-700 text-xs font-bold uppercase text-black dark:text-white">Tailwind</span>
+                                    <span class="px-3 py-1 bg-white dark:bg-black border border-gray-200 dark:border-neutral-700 text-xs font-bold uppercase text-black dark:text-white">Figma</span>
+                                    <span class="px-3 py-1 bg-white dark:bg-black border border-gray-200 dark:border-neutral-700 text-xs font-bold uppercase text-black dark:text-white">Node.js</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ MODAL -->
+    <div id="faq-modal" class="hidden fixed inset-0 z-[70] bg-white dark:bg-black overflow-y-auto animate-fade-in">
+        <!-- Close Button -->
+        <button onclick="closeFAQModal()" class="absolute top-6 right-6 p-2 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-full transition-colors">
+            <i data-lucide="x" class="w-6 h-6 text-black dark:text-white"></i>
+        </button>
+
+        <div class="min-h-screen flex flex-col justify-center p-6 sm:p-12 md:p-24 animate-slide-up">
+            <div class="max-w-3xl mx-auto w-full">
+                <h2 class="text-3xl md:text-5xl font-black uppercase mb-12 tracking-tight text-black dark:text-white" data-i18n="faq.title">FREQUENTLY ASKED QUESTIONS</h2>
+                
+                <div class="space-y-8">
+                    <!-- FAQ Item 1 -->
+                    <div class="border-b border-gray-200 dark:border-neutral-800 pb-6">
+                        <h3 class="text-xl font-bold mb-2 text-black dark:text-white" data-i18n="faq.q1">Do you accept freelance projects?</h3>
+                        <p class="text-gray-600 dark:text-gray-400" data-i18n="faq.a1">Yes, I am currently available for freelance work. Please contact me via the form or social media to discuss your project.</p>
+                    </div>
+                    
+                    <!-- FAQ Item 2 -->
+                    <div class="border-b border-gray-200 dark:border-neutral-800 pb-6">
+                        <h3 class="text-xl font-bold mb-2 text-black dark:text-white" data-i18n="faq.q2">What is your tech stack?</h3>
+                        <p class="text-gray-600 dark:text-gray-400" data-i18n="faq.a2">I specialize in React, Node.js, Tailwind CSS, and Python. I am also proficient in using Figma for UI/UX design.</p>
+                    </div>
+
+                    <!-- FAQ Item 3 -->
+                    <div class="border-b border-gray-200 dark:border-neutral-800 pb-6">
+                        <h3 class="text-xl font-bold mb-2 text-black dark:text-white" data-i18n="faq.q3">How can I contact you?</h3>
+                        <p class="text-gray-600 dark:text-gray-400" data-i18n="faq.a3">You can reach me via the 'Contact Me' card in the portfolio section, or through my social media links in the footer.</p>
+                    </div>
+                </div>
+                
+                <div class="mt-12">
+                    <button onclick="closeFAQModal()" class="font-bold underline text-black dark:text-white uppercase">Back to Portfolio</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTH MODAL (Register / Login) -->
+    <div id="auth-modal" class="hidden fixed inset-0 z-[60] bg-white dark:bg-black overflow-y-auto animate-fade-in">
+        <!-- Close Button -->
+        <button onclick="closeRegisterModal()" class="absolute top-6 right-6 p-2 hover:bg-gray-100 dark:hover:bg-neutral-900 rounded-full transition-colors">
+            <i data-lucide="x" class="w-6 h-6 text-black dark:text-white"></i>
+        </button>
+
+        <!-- Modal Content -->
+        <div class="min-h-screen flex flex-col items-center justify-center p-6 animate-slide-up">
+            
+            <!-- Logo Icon -->
+            <div class="mb-8">
+                 <img src="https://img2.pic.in.th/pic/SAD-GUY-LOGO.png" alt="SAD GUY LOGO" class="h-16 md:h-20 dark:invert transition-all duration-300">
+            </div>
+
+            <!-- Header -->
+            <h2 id="auth-title" class="text-2xl font-black uppercase tracking-tight mb-2 text-black dark:text-white">PORTFOLIO SIGNUP</h2>
+            <p id="auth-desc" class="text-gray-500 text-sm mb-8 text-center max-w-sm">One account, across all projects, just to make things a little easier.</p>
+
+            <!-- Form -->
+            <form class="w-full max-w-md space-y-4">
+                
+                <!-- Register Fields -->
+                <div id="register-fields">
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold uppercase mb-1 text-gray-500">First Name</label>
+                        <input type="text" class="w-full p-3 border border-gray-300 dark:border-neutral-700 rounded bg-white dark:bg-neutral-900 text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition-colors">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold uppercase mb-1 text-gray-500">Last Name</label>
+                        <input type="text" class="w-full p-3 border border-gray-300 dark:border-neutral-700 rounded bg-white dark:bg-neutral-900 text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition-colors">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold uppercase mb-1 text-gray-500">Date of Birth</label>
+                        <!-- Changed type to text initially to hide mm/dd/yyyy, changes to date on focus -->
+                        <input 
+                            type="text" 
+                            onfocus="(this.type='date')" 
+                            onblur="if(!this.value)this.type='text'"
+                            class="w-full p-3 border border-gray-300 dark:border-neutral-700 rounded bg-white dark:bg-neutral-900 text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition-colors min-h-[50px]"
+                        >
+                    </div>
+                </div>
+
+                <!-- Common Fields -->
+                <div class="mb-4">
+                    <label class="block text-xs font-bold uppercase mb-1 text-gray-500">Email Address <span class="text-red-500">*</span></label>
+                    <input type="email" required class="w-full p-3 border border-gray-300 dark:border-neutral-700 rounded bg-white dark:bg-neutral-900 text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition-colors">
+                </div>
+                
+                <div class="mb-2 relative">
+                    <label class="block text-xs font-bold uppercase mb-1 text-gray-500">Password <span class="text-red-500">*</span></label>
+                    <input type="password" required class="w-full p-3 border border-gray-300 dark:border-neutral-700 rounded bg-white dark:bg-neutral-900 text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition-colors">
+                    <button type="button" class="absolute right-3 top-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                        <i data-lucide="eye" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <!-- Forgot Password (Visible only in Login mode) -->
+                <div id="forgot-password-container" class="hidden flex justify-end mb-4">
+                    <a href="#" class="text-xs text-gray-500 underline hover:text-black dark:hover:text-white">Forgot password?</a>
+                </div>
+
+                <!-- Register Checkbox -->
+                <div id="register-checkbox" class="flex items-start mb-6">
+                    <input type="checkbox" id="policy" class="mt-1 mr-3 w-4 h-4 accent-black dark:accent-white">
+                    <label for="policy" class="text-xs text-gray-500 leading-relaxed">
+                        Tick here to receive emails about new projects, updates, and more. See our <a href="#" class="underline font-bold text-black dark:text-white">Privacy Policy</a>.
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="auth-submit-btn" class="w-full bg-black dark:bg-white text-white dark:text-black font-black uppercase py-4 rounded-full hover:opacity-80 transition-opacity">
+                    CREATE ACCOUNT
+                </button>
+
+            </form>
+
+            <!-- Toggle Mode -->
+            <div class="mt-6 text-sm">
+                <span class="text-gray-500" id="auth-switch-text">Already have an account?</span>
+                <button onclick="toggleAuthMode()" id="auth-switch-btn" class="font-bold underline text-black dark:text-white ml-1">Log in</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- PROJECT PREVIEW MODAL -->
+    <div id="project-modal" class="hidden fixed inset-0 z-[70] bg-black/90 backdrop-blur-sm overflow-hidden flex flex-col">
+        <!-- Header bar -->
+        <div class="flex justify-between items-center p-4 bg-black text-white border-b border-neutral-800">
+            <h3 id="modal-project-title" class="font-bold text-lg uppercase truncate">Project Title</h3>
+            <div class="flex items-center space-x-4">
+                <a id="modal-external-link" href="#" target="_blank" class="text-sm text-gray-400 hover:text-white flex items-center">
+                    <i data-lucide="external-link" class="w-4 h-4 mr-1"></i> Open New Tab
+                </a>
+                <button onclick="closeProjectPreview()" class="p-1 hover:bg-neutral-800 rounded-full transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Iframe container -->
+        <div class="flex-grow w-full h-full relative">
+            <div id="modal-loader" class="absolute inset-0 flex items-center justify-center text-white">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+            </div>
+            <iframe id="project-iframe" class="w-full h-full bg-white" src="" onload="document.getElementById('modal-loader').classList.add('hidden')"></iframe>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- TRANSLATION DATA ---
+        const translations = {
+            en: {
+                "nav.work": "WORK",
+                "nav.about": "ABOUT ME",
+                "nav.services": "SERVICES",
+                "search.placeholder": "Search projects...",
+                "hero.title": "UI/UX DESIGN & WEB DEVELOPMENT",
+                "hero.p1": "Digital experiences designed to help your brand become its personal best. Because when it comes to performing at your max in the digital world, there should be no obstacles – least of all your website.",
+                "hero.p2": "Functional and beautiful, I create user interfaces you'll love to use. Since 2025, I've designed and developed the web applications I want to see in the world, because innovation and user experience are what I know best.",
+                "projects.title": "PROJECTS BUILT IN THE CODE EDITOR",
+                "projects.p1": "My legacy was built in the code editor. This portfolio was founded with a love for coding and that passion continues into all my projects today. You'll find the latest innovation in web technology and design to help you perform at your best and recover in style.",
+                "projects.p2_intro": "My",
+                "projects.p2_fe": "Frontend Work",
+                "projects.p2_text1": "features pixel-perfect",
+                "projects.p2_react": "React components",
+                "projects.p2_text2": "and",
+                "projects.p2_tail": "Tailwind CSS layouts",
+                "projects.p2_text3": ". Whilst my",
+                "projects.p2_be": "Backend Systems",
+                "projects.p2_text4": "are designed for a range of scales and feature sophisticated API integrations.",
+                "projects.p3_intro": "An obsession with optimization is what started this career. My",
+                "projects.p3_apps": "Web Apps",
+                "projects.p3_text1": "and",
+                "projects.p3_mobile": "Mobile Interfaces",
+                "projects.p3_text2": "feature classic styles, with modern cuts and innovative frameworks to help you raise the bar.",
+                
+                "about.title": "ABOUT ME",
+                "about.subtitle1": "DRIVEN BY PASSION",
+                "about.text1": "I am a digital creator obsessed with performance and sleek design. My mission is to bridge the gap between imagination and reality through clean code and stunning visuals. I don't just build websites; I build digital legacies.",
+                "about.subtitle2": "MY VISION",
+                "about.text2": "To be the catalyst for your digital evolution. I believe in conditioning your brand for the digital age, ensuring that every pixel serves a purpose and every interaction feels seamless. Progress is not just a goal; it's my standard.",
+
+                "services.title": "SERVICES",
+                "services.s1_title": "WEB DEVELOPMENT",
+                "services.s1_desc": "High-performance websites built with modern technologies like React, Vue, and Tailwind CSS.",
+                "services.s2_title": "UI/UX DESIGN",
+                "services.s2_desc": "Intuitive and beautiful user interfaces designed for optimal user experience and conversion.",
+                "services.s3_title": "MOBILE APPS",
+                "services.s3_desc": "Cross-platform mobile applications for iOS and Android that connect you with your audience anywhere.",
+
+                "cards.sectionTitle": "MORE ABOUT MY WORK",
+                "cards.c1_title_sub": "FOR JOJI<br>DISCOVER YOUR SOUND",
+                "cards.c1_stack": "Web Experience",
+                "cards.c1_tag": "CASE STUDY",
+                "cards.c1_desc": "An interactive sound discovery platform.",
+                
+                "cards.c2_title_sub": "SPACE-IDEAS<br>INTERIOR GUIDE",
+                "cards.c2_stack": "React / Content",
+                "cards.c2_tag": "BLOG / GUIDE",
+                "cards.c2_desc": "Room decoration ideas for various styles.",
+
+                "cards.c3_title_sub": "NEXUS STORE<br>2025 E-COMMERCE",
+                "cards.c3_stack": "Full Stack",
+                "cards.c3_tag": "WEB APPLICATION",
+                "cards.c3_desc": "Next-gen online shopping platform.",
+
+                "cards.c4_title_sub": "XINSOO<br>SHIN SU-HYUN",
+                "cards.c4_stack": "Portfolio",
+                "cards.c4_tag": "ARTIST SHOWCASE",
+                "cards.c4_desc": "Official portfolio for artist Shin Su-hyun.",
+
+                "cards.c5_title_sub": "HBD CARD<br>DIGITAL GREETINGS",
+                "cards.c5_stack": "Interactive UI",
+                "cards.c5_tag": "WEB APP",
+                "cards.c5_desc": "Platform for sending digital birthday cards.",
+
+                "cards.c6_title_sub": "KORE<br>Brand-Website",
+                "cards.c6_stack": "Full Stack",
+                "cards.c6_tag": "WEB APPLICATION",
+                "cards.c6_desc": "Brand memorable and different from your competitors.",
+
+                "cards.c7_title_sub": "Gym<br>Discipline",
+                "cards.c7_stack": "Portfolio",
+                "cards.c7_tag": "EVERYDAY LIFE",
+                "cards.c7_desc": "Official Portfolio Discipline Project.",
+
+                "cards.c0_title": "GET IN TOUCH",
+                "cards.c0_tag": "CONTACT ME",
+                "cards.c0_desc": "Let's build something great together.",
+
+                "footer.help": "HELP",
+                "footer.myAccount": "MY ACCOUNT",
+                "footer.pages": "PAGES",
+                "footer.socials": "SOCIALS",
+                "footer.rights": "All Rights Reserved",
+                "footer.socialDesc": "The Portfolio community is devoted to unlocking potential through conditioning and the things we do today to prepare for tomorrow.",
+                "footer.links.faq": "FAQ",
+                "footer.links.delivery": "Delivery Information",
+                "footer.links.returns": "Returns Policy",
+                "footer.links.projects": "Projects",
+                "footer.links.resume": "Resume",
+                "footer.links.blog": "Blog",
+                "footer.links.about": "About Me",
+
+                "faq.title": "FREQUENTLY ASKED QUESTIONS",
+                "faq.q1": "Do you accept freelance projects?",
+                "faq.a1": "Yes, I am currently available for freelance work. Please contact me via the form or social media to discuss your project.",
+                "faq.q2": "What is your tech stack?",
+                "faq.a2": "I specialize in React, Node.js, Tailwind CSS, and Python. I am also proficient in using Figma for UI/UX design.",
+                "faq.q3": "How can I contact you?",
+                "faq.a3": "You can reach me via the 'Contact Me' card in the portfolio section, or through my social media links in the footer."
+            },
+            th: {
+                "nav.work": "ผลงาน",
+                "nav.about": "เกี่ยวกับฉัน",
+                "nav.services": "บริการ",
+                "search.placeholder": "ค้นหาโปรเจกต์...",
+                "hero.title": "การออกแบบ UI/UX และการพัฒนาเว็บไซต์",
+                "hero.p1": "ประสบการณ์ดิจิทัลที่ออกแบบมาเพื่อช่วยให้แบรนด์ของคุณก้าวไปสู่จุดที่ดีที่สุด เพราะเมื่อพูดถึงการแสดงศักยภาพสูงสุดในโลกดิจิทัล ไม่ควรมีอุปสรรคใดๆ มาขวางกั้น โดยเฉพาะเว็บไซต์ของคุณ",
+                "hero.p2": "ใช้งานได้จริงและสวยงาม ผมสร้างสรรค์หน้าจอผู้ใช้ที่คุณจะหลงรัก ตั้งแต่ปี 2025 ผมได้ออกแบบและพัฒนาเว็บแอปพลิเคชันที่ผมอยากเห็นในโลกนี้ เพราะนวัตกรรมและประสบการณ์ผู้ใช้คือสิ่งที่ผมถนัดที่สุด",
+                "projects.title": "โปรเจกต์ที่สร้างขึ้นใน CODE EDITOR",
+                "projects.p1": "ตำนานของผมสร้างขึ้นใน Code Editor พอร์ตโฟลิโอนี้ก่อตั้งขึ้นด้วยความรักในการเขียนโค้ด และความหลงใหลนั้นยังคงอยู่ในทุกโปรเจกต์ของผมในวันนี้ คุณจะได้พบกับนวัตกรรมล่าสุดในเทคโนโลยีเว็บและการออกแบบ",
+                "projects.p2_intro": "งานด้าน",
+                "projects.p2_fe": "Frontend",
+                "projects.p2_text1": "ของผมเน้นความสมบูรณ์แบบด้วย",
+                "projects.p2_react": "React components",
+                "projects.p2_text2": "และ",
+                "projects.p2_tail": "Tailwind CSS layouts",
+                "projects.p2_text3": "ในขณะที่",
+                "projects.p2_be": "Backend Systems",
+                "projects.p2_text4": "ถูกออกแบบมาเพื่อรองรับทุกขนาด พร้อมการเชื่อมต่อ API ที่ซับซ้อนและการจัดการฐานข้อมูลที่ชาญฉลาด",
+                "projects.p3_intro": "ความหลงใหลในการปรับปรุงประสิทธิภาพคือจุดเริ่มต้นของอาชีพนี้",
+                "projects.p3_apps": "Web Apps",
+                "projects.p3_text1": "และ",
+                "projects.p3_mobile": "Mobile Interfaces",
+                "projects.p3_text2": "ของผมมีสไตล์คลาสสิก แต่แฝงด้วยความทันสมัยและเฟรมเวิร์กนวัตกรรมใหม่ๆ",
+                
+                "about.title": "เกี่ยวกับฉัน",
+                "about.subtitle1": "ขับเคลื่อนด้วยความหลงใหล",
+                "about.text1": "ผมคือนักสร้างสรรค์ดิจิทัลที่หลงใหลในประสิทธิภาพและการออกแบบที่โฉบเฉี่ยว ภารกิจของผมคือการเชื่อมช่องว่างระหว่างจินตนาการและความเป็นจริงผ่านโค้ดที่สะอาดตาและภาพที่สวยงาม ผมไม่ได้แค่สร้างเว็บไซต์ แต่ผมสร้างตำนานดิจิทัล",
+                "about.subtitle2": "วิสัยทัศน์ของผม",
+                "about.text2": "เพื่อเป็นตัวเร่งให้เกิดวิวัฒนาการดิจิทัลของคุณ ผมเชื่อในการเตรียมความพร้อมแบรนด์ของคุณสำหรับยุคดิจิทัล เพื่อให้มั่นใจว่าทุกพิกเซลมีจุดมุ่งหมายและการโต้ตอบทุกครั้งลื่นไหล ความก้าวหน้าไม่ใช่แค่เป้าหมาย แต่เป็นมาตรฐานของผม",
+
+                "services.title": "บริการ",
+                "services.s1_title": "พัฒนาเว็บไซต์",
+                "services.s1_desc": "เว็บไซต์ประสิทธิภาพสูงที่สร้างด้วยเทคโนโลยีสมัยใหม่ เช่น React, Vue และ Tailwind CSS",
+                "services.s2_title": "ออกแบบ UI/UX",
+                "services.s2_desc": "หน้าจอผู้ใช้ที่สวยงามและใช้งานง่าย ออกแบบมาเพื่อประสบการณ์ผู้ใช้ที่ดีที่สุด",
+                "services.s3_title": "แอปพลิเคชันมือถือ",
+                "services.s3_desc": "แอปพลิเคชันมือถือข้ามแพลตฟอร์มสำหรับ iOS และ Android เพื่อเชื่อมต่อคุณกับกลุ่มเป้าหมายได้ทุกที่",
+
+                "cards.sectionTitle": "เพิ่มเติมเกี่ยวกับงานของผม",
+                "cards.c1_title_sub": "FOR JOJI<br>DISCOVER YOUR SOUND",
+                "cards.c1_stack": "Web Experience",
+                "cards.c1_tag": "กรณีศึกษา",
+                "cards.c1_desc": "ประสบการณ์การค้นหาเสียงแบบอินเทอร์แอคทีฟ",
+                
+                "cards.c2_title_sub": "SPACE-IDEAS<br>แนะนำการแต่งห้อง",
+                "cards.c2_stack": "React / Content",
+                "cards.c2_tag": "บล็อก / คู่มือ",
+                "cards.c2_desc": "เว็บแนะนำการตกแต่งห้องหลากหลายประเภท",
+
+                "cards.c3_title_sub": "NEXUS STORE<br>2025 E-COMMERCE",
+                "cards.c3_stack": "Full Stack",
+                "cards.c3_tag": "เว็บแอปพลิเคชัน",
+                "cards.c3_desc": "เว็บซื้อขายสินค้าออนไลน์แห่งอนาคต",
+
+                "cards.c4_title_sub": "XINSOO<br>SHIN SU-HYUN",
+                "cards.c4_stack": "Portfolio",
+                "cards.c4_tag": "ผลงานศิลปิน",
+                "cards.c4_desc": "เว็บโชว์ผลงานของศิลปิน Shin Su-hyun",
+
+                "cards.c5_title_sub": "HAPPY BIRTHDAY<br>DIGITAL CARD",
+                "cards.c5_stack": "Interactive UI",
+                "cards.c5_tag": "เว็บแอป",
+                "cards.c5_desc": "เว็บไซต์สำหรับส่งการ์ดวันเกิดออนไลน์",
+
+                "cards.c6_title_sub": "KORE<br>Brand-Website",
+                "cards.c6_stack": "Full Stack",
+                "cards.c6_tag": "เว็บแอปพลิเคชัน",
+                "cards.c6_desc": "ทำให้แบรนด์เป็นที่จดจำและแตกต่างจากคู่แข่ง",
+
+                "cards.c7_title_sub": "ยิม<br>ความมีระเบียบวินัย",
+                "cards.c7_stack": "Portfolio",
+                "cards.c7_tag": "ชีวิตประจำวัน",
+                "cards.c7_desc": "เว็บโชว์ผลงานความมีระเบียบวินัยในการออกกำลังกาย",
+
+                "cards.c0_title": "ติดต่อ",
+                "cards.c0_tag": "ติดต่อฉัน",
+                "cards.c0_desc": "มาสร้างสรรค์ผลงานที่ยอดเยี่ยมด้วยกัน",
+
+                "footer.help": "ช่วยเหลือ",
+                "footer.myAccount": "บัญชีของฉัน",
+                "footer.pages": "หน้าเว็บ",
+                "footer.socials": "โซเชียล",
+                "footer.rights": "สงวนลิขสิทธิ์",
+                "footer.socialDesc": "ชุมชน Portfolio นี้อุทิศตนเพื่อปลดล็อกศักยภาพผ่านการฝึกฝนและสิ่งที่เราทำในวันนี้เพื่อเตรียมพร้อมสำหรับวันพรุ่งนี้",
+                "footer.links.faq": "คำถามที่พบบ่อย",
+                "footer.links.delivery": "ข้อมูลการจัดส่ง",
+                "footer.links.returns": "นโยบายการคืนสินค้า",
+                "footer.links.projects": "โปรเจกต์",
+                "footer.links.resume": "เรซูเม่",
+                "footer.links.blog": "บทความ",
+                "footer.links.about": "เกี่ยวกับฉัน",
+
+                "faq.title": "คำถามที่พบบ่อย",
+                "faq.q1": "คุณรับงานฟรีแลนซ์หรือไม่?",
+                "faq.a1": "ใช่ครับ ผมเปิดรับงานฟรีแลนซ์อยู่ สามารถติดต่อผมผ่านแบบฟอร์มหรือโซเชียลมีเดียเพื่อพูดคุยรายละเอียดได้เลยครับ",
+                "faq.q2": "คุณใช้เทคโนโลยีอะไรบ้าง?",
+                "faq.a2": "ผมเชี่ยวชาญในการใช้ React, Node.js, Tailwind CSS และ Python นอกจากนี้ยังสามารถใช้ Figma ในการออกแบบ UI/UX ได้อย่างคล่องแคล่ว",
+                "faq.q3": "จะติดต่อคุณได้อย่างไร?",
+                "faq.a3": "คุณสามารถติดต่อผมได้ผ่านการ์ด 'ติดต่อฉัน' ในส่วนผลงาน หรือผ่านลิงก์โซเชียลมีเดียที่ด้านล่างสุดของหน้าเว็บครับ"
+            }
+        };
+
+        // --- STATE ---
+        let currentLang = 'en';
+        let isDarkMode = false;
+        let isMenuOpen = false;
+        let isSearchOpen = false;
+        let currentAuthMode = 'register'; // 'register' or 'login'
+
+        // --- FUNCTIONS ---
+
+        function updateContent() {
+            const t = translations[currentLang];
+            
+            // Update simple text elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.textContent = t[key];
+            });
+
+            // Update HTML elements (with line breaks)
+            document.querySelectorAll('[data-i18n-html]').forEach(el => {
+                const key = el.getAttribute('data-i18n-html');
+                if (t[key]) el.innerHTML = t[key];
+            });
+
+            // Update placeholders
+            document.getElementById('search-input').placeholder = t['search.placeholder'];
+            document.getElementById('mobile-search-input').placeholder = t['search.placeholder'];
+
+            // Update Button Text
+            document.getElementById('lang-btn').textContent = currentLang === 'en' ? 'TH' : 'EN';
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'th' : 'en';
+            updateContent();
+            if(document.getElementById('search-input').value) filterProjects();
+        }
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            const html = document.documentElement;
+            const themeBtn = document.getElementById('theme-btn');
+            
+            if (isDarkMode) {
+                html.classList.add('dark');
+                themeBtn.innerHTML = '<i data-lucide="sun" class="w-6 h-6"></i>';
+            } else {
+                html.classList.remove('dark');
+                themeBtn.innerHTML = '<i data-lucide="moon" class="w-6 h-6"></i>';
+            }
+            lucide.createIcons();
+        }
+
+        function toggleMenu() {
+            isMenuOpen = !isMenuOpen;
+            const menu = document.getElementById('mobile-menu');
+            const menuIcon = document.getElementById('menu-icon');
+            
+            if (isMenuOpen) {
+                menu.classList.remove('hidden');
+                menuIcon.parentElement.innerHTML = '<i data-lucide="x" id="menu-icon" class="w-6 h-6"></i>';
+            } else {
+                menu.classList.add('hidden');
+                menuIcon.parentElement.innerHTML = '<i data-lucide="menu" id="menu-icon" class="w-6 h-6"></i>';
+            }
+            lucide.createIcons();
+        }
+
+        // --- SEARCH FUNCTIONS ---
+        function toggleSearch() {
+            isSearchOpen = !isSearchOpen;
+            const container = document.getElementById('search-container');
+            const input = document.getElementById('search-input');
+            const closeBtn = document.getElementById('close-search-btn');
+
+            if (isSearchOpen) {
+                container.classList.remove('w-8', 'border-transparent', 'bg-transparent');
+                // Updated: cleaner look without border, using light gray bg
+                container.classList.add('w-56', 'lg:w-64', 'bg-gray-100', 'dark:bg-neutral-800');
+                input.classList.remove('opacity-0');
+                closeBtn.classList.remove('hidden');
+                input.focus();
+            } else {
+                container.classList.add('w-8', 'border-transparent', 'bg-transparent');
+                container.classList.remove('w-56', 'lg:w-64', 'bg-gray-100', 'dark:bg-neutral-800');
+                input.classList.add('opacity-0');
+                closeBtn.classList.add('hidden');
+                input.value = '';
+                filterProjects();
+            }
+        }
+
+        function filterProjects() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const cards = document.querySelectorAll('.project-card');
+            let hasResults = false;
+
+            cards.forEach(card => {
+                const title = card.querySelector('.search-title').innerText.toLowerCase();
+                const desc = card.querySelector('.search-desc').innerText.toLowerCase();
+                const keywords = card.getAttribute('data-keywords') || "";
+                
+                if (title.includes(query) || desc.includes(query) || keywords.includes(query)) {
+                    card.classList.remove('hidden');
+                    hasResults = true;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            const noResults = document.getElementById('no-results-msg');
+            if (!hasResults && query.length > 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+
+        function filterProjectsMobile() {
+            const query = document.getElementById('mobile-search-input').value.toLowerCase();
+            const cards = document.querySelectorAll('.project-card');
+            cards.forEach(card => {
+                const title = card.querySelector('.search-title').innerText.toLowerCase();
+                const desc = card.querySelector('.search-desc').innerText.toLowerCase();
+                const keywords = card.getAttribute('data-keywords') || "";
+                if (title.includes(query) || desc.includes(query) || keywords.includes(query)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        // --- AUTH MODAL FUNCTIONS ---
+
+        function openRegisterModal(mode = 'register') {
+            const modal = document.getElementById('auth-modal');
+            modal.classList.remove('hidden');
+            document.body.classList.add('no-scroll'); // Prevent background scrolling
+            
+            // Set initial mode
+            currentAuthMode = mode;
+            updateAuthUI();
+        }
+
+        function closeRegisterModal() {
+            const modal = document.getElementById('auth-modal');
+            modal.classList.add('hidden');
+            document.body.classList.remove('no-scroll');
+        }
+
+        function toggleAuthMode() {
+            currentAuthMode = currentAuthMode === 'register' ? 'login' : 'register';
+            updateAuthUI();
+        }
+
+        function updateAuthUI() {
+            const title = document.getElementById('auth-title');
+            const desc = document.getElementById('auth-desc');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const switchText = document.getElementById('auth-switch-text');
+            const switchBtn = document.getElementById('auth-switch-btn');
+            const regFields = document.getElementById('register-fields');
+            const regCheckbox = document.getElementById('register-checkbox');
+            const forgotPwd = document.getElementById('forgot-password-container');
+
+            if (currentAuthMode === 'register') {
+                title.textContent = "PORTFOLIO SIGNUP";
+                desc.textContent = "One account, across all projects, just to make things a little easier.";
+                submitBtn.textContent = "CREATE ACCOUNT";
+                switchText.textContent = "Already have an account?";
+                switchBtn.textContent = "Log in";
+                regFields.classList.remove('hidden');
+                regCheckbox.classList.remove('hidden');
+                forgotPwd.classList.add('hidden');
+            } else {
+                title.textContent = "PORTFOLIO LOGIN";
+                desc.textContent = "Welcome back! Log in to access your dashboard.";
+                submitBtn.textContent = "LOG IN";
+                switchText.textContent = "New to Portfolio?";
+                switchBtn.textContent = "Create an account";
+                regFields.classList.add('hidden');
+                regCheckbox.classList.add('hidden');
+                forgotPwd.classList.remove('hidden');
+            }
+        }
+
+        // --- ABOUT MODAL FUNCTIONS ---
+        function openAboutModal() {
+            const modal = document.getElementById('about-modal');
+            modal.classList.remove('hidden');
+            document.body.classList.add('no-scroll');
+        }
+
+        function closeAboutModal() {
+            const modal = document.getElementById('about-modal');
+            modal.classList.add('hidden');
+            document.body.classList.remove('no-scroll');
+        }
+
+        // --- FAQ MODAL FUNCTIONS ---
+        function openFAQModal() {
+            const modal = document.getElementById('faq-modal');
+            modal.classList.remove('hidden');
+            document.body.classList.add('no-scroll');
+        }
+
+        function closeFAQModal() {
+            const modal = document.getElementById('faq-modal');
+            modal.classList.add('hidden');
+            document.body.classList.remove('no-scroll');
+        }
+
+        // --- PROJECT PREVIEW MODAL FUNCTIONS ---
+
+        function openProjectPreview(url, title) {
+            const modal = document.getElementById('project-modal');
+            const iframe = document.getElementById('project-iframe');
+            const titleEl = document.getElementById('modal-project-title');
+            const linkEl = document.getElementById('modal-external-link');
+            const loader = document.getElementById('modal-loader');
+
+            modal.classList.remove('hidden');
+            document.body.classList.add('no-scroll');
+            
+            titleEl.textContent = title;
+            linkEl.href = url;
+            
+            // Reset loader and iframe
+            loader.classList.remove('hidden');
+            iframe.src = url;
+        }
+
+        function closeProjectPreview() {
+            const modal = document.getElementById('project-modal');
+            const iframe = document.getElementById('project-iframe');
+            
+            modal.classList.add('hidden');
+            document.body.classList.remove('no-scroll');
+            
+            // Clear src to stop execution/media
+            iframe.src = '';
+        }
+
+        // --- EVENT LISTENERS ---
+
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 20) {
+                navbar.classList.add('shadow-md', 'dark:shadow-neutral-900', 'py-3');
+                navbar.classList.remove('py-5');
+            } else {
+                navbar.classList.remove('shadow-md', 'dark:shadow-neutral-900', 'py-3');
+                navbar.classList.add('py-5');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            updateContent();
+        });
+
+    </script>
+</body>
+</html>
